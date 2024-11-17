@@ -12,12 +12,12 @@ import java.util.Map;
  * @create 2024/7/2 1:45
  */
 public class RateLimitProvider {
-    private Map<String, RateLimit> rateLimitMap=new HashMap<>();
+    private final Map<String, RateLimit> rateLimitMap = new HashMap<>();
 
-    public RateLimit getRateLimit(String interfaceName){
-        if(!rateLimitMap.containsKey(interfaceName)){
-            RateLimit rateLimit=new TokenBucketRateLimitImpl(100,10);
-            rateLimitMap.put(interfaceName,rateLimit);
+    public RateLimit getRateLimit(String interfaceName) {
+        if (!rateLimitMap.containsKey(interfaceName)) {
+            RateLimit rateLimit = new TokenBucketRateLimitImpl(100, 10);
+            rateLimitMap.put(interfaceName, rateLimit);
             return rateLimit;
         }
         return rateLimitMap.get(interfaceName);
