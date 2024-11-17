@@ -88,7 +88,7 @@ public class CircuitBreaker {
         return state;
     }
 
-    enum CircuitBreakerState {
+    public enum CircuitBreakerState {
         //关闭，开启，半开启
         CLOSED, OPEN, HALF_OPEN
     }
