@@ -13,10 +13,8 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @create 2024/6/20 19:28
  */
-public class guavaRetry {
-    private RpcClient rpcClient;
+public class GuavaRetry {
     public RpcResponse sendServiceWithRetry(RpcRequest request, RpcClient rpcClient) {
-        this.rpcClient=rpcClient;
         Retryer<RpcResponse> retryer = RetryerBuilder.<RpcResponse>newBuilder()
                 //无论出现什么异常，都进行重试
                 .retryIfException()

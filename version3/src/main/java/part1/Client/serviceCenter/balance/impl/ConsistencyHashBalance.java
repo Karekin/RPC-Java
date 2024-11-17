@@ -15,16 +15,16 @@ public class ConsistencyHashBalance implements LoadBalance {
     private static final int VIRTUAL_NUM = 5;
 
     // 虚拟节点分配，key是hash值，value是虚拟节点服务器名称
-    private SortedMap<Integer, String> shards = new TreeMap<Integer, String>();
+    private final SortedMap<Integer, String> shards = new TreeMap<Integer, String>();
 
     // 真实节点列表
-    private List<String> realNodes = new LinkedList<String>();
+    private final List<String> realNodes = new LinkedList<String>();
 
     //模拟初始服务器
-    private String[] servers =null;
+    private final String[] servers = null;
 
-    private  void init(List<String> serviceList) {
-        for (String server :serviceList) {
+    private void init(List<String> serviceList) {
+        for (String server : serviceList) {
             realNodes.add(server);
             System.out.println("真实节点[" + server + "] 被添加");
             for (int i = 0; i < VIRTUAL_NUM; i++) {
@@ -35,13 +35,14 @@ public class ConsistencyHashBalance implements LoadBalance {
             }
         }
     }
+
     /**
      * 获取被分配的节点名
      *
      * @param node
      * @return
      */
-    public  String getServer(String node,List<String> serviceList) {
+    public String getServer(String node, List<String> serviceList) {
         init(serviceList);
         int hash = getHash(node);
         Integer key = null;
@@ -60,7 +61,7 @@ public class ConsistencyHashBalance implements LoadBalance {
      *
      * @param node
      */
-    public  void addNode(String node) {
+    public void addNode(String node) {
         if (!realNodes.contains(node)) {
             realNodes.add(node);
             System.out.println("真实节点[" + node + "] 上线添加");
@@ -78,7 +79,7 @@ public class ConsistencyHashBalance implements LoadBalance {
      *
      * @param node
      */
-    public  void delNode(String node) {
+    public void delNode(String node) {
         if (realNodes.contains(node)) {
             realNodes.remove(node);
             System.out.println("真实节点[" + node + "] 下线移除");
@@ -112,8 +113,8 @@ public class ConsistencyHashBalance implements LoadBalance {
 
     @Override
     public String balance(List<String> addressList) {
-        String random= UUID.randomUUID().toString();
-        return getServer(random,addressList);
+        String random = UUID.randomUUID().toString();
+        return getServer(random, addressList);
     }
 
 }
