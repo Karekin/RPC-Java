@@ -4,8 +4,8 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import part2.Client.cache.serviceCache;
-import part2.Client.serviceCenter.ZkWatcher.watchZK;
+import part2.Client.cache.ServiceCache;
+import part2.Client.serviceCenter.ZkWatcher.WatchZK;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.List;
  * @version 1.0
  * @create 2024/5/3 21:41
  */
-public class ZKServiceCenter implements ServiceCenter{
+public class ZKServiceCenter implements ServiceCenter {
     // curator 提供的zookeeper客户端
-    private CuratorFramework client;
+    private final CuratorFramework client;
     //zookeeper根路径节点
     private static final String ROOT_PATH = "MyRPC";
     //serviceCache
-    private serviceCache cache;
+    private final ServiceCache cache;
 
     //负责zookeeper客户端的初始化，并与zookeeper服务端进行连接
     public ZKServiceCenter() throws InterruptedException {
@@ -36,22 +36,23 @@ public class ZKServiceCenter implements ServiceCenter{
         this.client.start();
         System.out.println("zookeeper 连接成功");
         //初始化本地缓存
-        cache=new serviceCache();
+        cache = new ServiceCache();
         //加入zookeeper事件监听器
-        watchZK watcher=new watchZK(client,cache);
+        WatchZK watcher = new WatchZK(client, cache);
         //监听启动
         watcher.watchToUpdate(ROOT_PATH);
     }
+
     //根据服务名（接口名）返回地址
     @Override
     public InetSocketAddress serviceDiscovery(String serviceName) {
         try {
             //先从本地缓存中找
-            List<String> serviceList=cache.getServcieFromCache(serviceName);
+            List<String> serviceList = cache.getServcieFromCache(serviceName);
             //如果找不到，再去zookeeper中找
             //这种i情况基本不会发生，或者说只会出现在初始化阶段
-            if(serviceList==null) {
-                serviceList=client.getChildren().forPath("/" + serviceName);
+            if (serviceList == null) {
+                serviceList = client.getChildren().forPath("/" + serviceName);
             }
             // 这里默认用的第一个，后面加负载均衡
             String string = serviceList.get(0);
@@ -61,12 +62,14 @@ public class ZKServiceCenter implements ServiceCenter{
         }
         return null;
     }
+
     // 地址 -> XXX.XXX.XXX.XXX:port 字符串
     private String getServiceAddress(InetSocketAddress serverAddress) {
         return serverAddress.getHostName() +
                 ":" +
                 serverAddress.getPort();
     }
+
     // 字符串解析为地址
     private InetSocketAddress parseAddress(String address) {
         String[] result = address.split(":");

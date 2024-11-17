@@ -13,8 +13,7 @@ import part1.common.Message.RpcResponse;
 public class JsonSerializer implements Serializer {
     @Override
     public byte[] serialize(Object obj) {
-        byte[] bytes = JSONObject.toJSONBytes(obj);
-        return bytes;
+        return JSONObject.toJSONBytes(obj);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class JsonSerializer implements Serializer {
                     //判断每个对象类型是否和paramsTypes中的一致
                     if (!paramsType.isAssignableFrom(request.getParams()[i].getClass())){
                         //如果不一致，就行进行类型转换
-                        objects[i] = JSONObject.toJavaObject((JSONObject) request.getParams()[i],request.getParamsType()[i]);
+                        objects[i] = JSONObject.toJavaObject((JSONObject) request.getParams()[i], request.getParamsType()[i]);
                     }else{
                         //如果一致就直接赋给objects[i]
                         objects[i] = request.getParams()[i];
@@ -45,7 +44,7 @@ public class JsonSerializer implements Serializer {
                 RpcResponse response = JSON.parseObject(bytes, RpcResponse.class);
                 Class<?> dataType = response.getDataType();
                 //判断转化后的response对象中的data的类型是否正确
-                if(! dataType.isAssignableFrom(response.getData().getClass())){
+                if(!dataType.isAssignableFrom(response.getData().getClass())){
                     response.setData(JSONObject.toJavaObject((JSONObject) response.getData(),dataType));
                 }
                 obj = response;
